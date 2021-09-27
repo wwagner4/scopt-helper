@@ -25,11 +25,12 @@ object Main {
     OParser.sequence(
       programName("cli-test"),
       head("cli-test", "0.1"),
-      // option -f, --foo
       opt[Int]('f', "foo")
         .action((x, c) => c.copy(foo = x))
         .text("foo is an integer property"),
-      // more options here...
+      opt[String]('l', name="libName")
+        .action((x,c) => c.copy(libName = x))
+        .text("library name. string")
     )
   }
 
