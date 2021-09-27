@@ -1,4 +1,5 @@
 package clitest
+
 import scopt.OParser
 
 import java.io.File
@@ -20,7 +21,7 @@ object Main {
                      kwargs: Map[String, String] = Map())
 
   val builder = OParser.builder[Config]
-  val parser1 = {
+  val parser = {
     import builder.*
     OParser.sequence(
       programName("cli-test"),
@@ -28,15 +29,16 @@ object Main {
       opt[Int]('f', "foo")
         .action((x, c) => c.copy(foo = x))
         .text("foo is an integer property"),
-      opt[String]('l', name="libName")
-        .action((x,c) => c.copy(libName = x))
-        .text("library name. string")
+      opt[String]('l', name = "libName")
+        .action((x, c) => c.copy(libName = x))
+        .text("library name. string"),
+      help('h', "help").text("prints this usage text"),
     )
   }
 
   def main(args: Array[String]): Unit = {
     // OParser.parse returns Option[Config]
-    OParser.parse(parser1, args, Config()) match {
+    OParser.parse(parser, args, Config()) match {
       case Some(config) =>
         println(config)
       case _ =>
