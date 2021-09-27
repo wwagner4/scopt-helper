@@ -6,39 +6,52 @@ import java.io.File
 
 object Main {
 
-  case class Config(
-                     foo: Int = -1,
-                     out: File = new File("."),
-                     xyz: Boolean = false,
-                     libName: String = "",
-                     maxCount: Int = -1,
-                     verbose: Boolean = false,
-                     debug: Boolean = false,
-                     mode: String = "",
-                     files: Seq[File] = Seq(),
-                     keepalive: Boolean = false,
-                     jars: Seq[File] = Seq(),
-                     kwargs: Map[String, String] = Map())
+  sealed trait Mode
 
-  val builder = OParser.builder[Config]
+  case object Update extends Mode
+
+  case class Insert(num: Int) extends Mode
+
+  case class CliCfg(
+                     foo: Int = -1,
+                     libName: String = "",
+                     mode: Mode = Update
+                   )
+
+  val builder = OParser.builder[CliCfg]
   val parser = {
     import builder.*
     OParser.sequence(
       programName("cli-test"),
-      head("cli-test", "0.1"),
+      head("cli-test"),
       opt[Int]('f', "foo")
         .action((x, c) => c.copy(foo = x))
         .text("foo is an integer property"),
       opt[String]('l', name = "libName")
         .action((x, c) => c.copy(libName = x))
         .text("library name. string"),
-      help('h', "help").text("prints this usage text"),
+      help('h', "help")
+        .text("prints this usage text"),
+      cmd("update")
+        .action((_, c) => c.copy(mode = Update))
+        .text("     update whatever"),
+      cmd("insert")
+        .action((_, c) => c.copy(mode = Insert(0)))
+        .text("     insert is somthing to be inserted")
+        .children(
+          opt[Int]('n', "number")
+            .action((x, c) => c.mode match {
+              case i: Insert => c.copy(mode = i.copy(num = x))
+              case _ => throw IllegalStateException()
+            })
+            .text("Number of inserts"),
+        )
     )
   }
 
   def main(args: Array[String]): Unit = {
     // OParser.parse returns Option[Config]
-    OParser.parse(parser, args, Config()) match {
+    OParser.parse(parser, args, CliCfg()) match {
       case Some(config) =>
         println(config)
       case _ =>
