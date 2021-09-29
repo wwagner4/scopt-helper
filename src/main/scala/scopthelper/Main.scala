@@ -1,8 +1,6 @@
-package clitest
+package scopthelper
 
 import scopt.OParser
-
-import java.io.File
 
 object Main {
 
