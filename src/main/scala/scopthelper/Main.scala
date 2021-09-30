@@ -67,6 +67,7 @@ object Main {
           .children(
             opt[Int]('n', "number-of-persons")
               .text("Number of persons")
+              .required()
               .action((x, c) => {
                 c.copy(command = c.command.asInstanceOf[Prepare].copy(numberOfPersons = x))
               }),
