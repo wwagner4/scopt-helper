@@ -68,6 +68,7 @@ object Main {
             opt[Int]('n', "number-of-persons")
               .text("Number of persons")
               .required()
+              .validate(x => if x > 1 then success else failure("Number of persons must be more than zero"))
               .action((x, c) => {
                 c.copy(command = c.command.asInstanceOf[Prepare].copy(numberOfPersons = x))
               }),
