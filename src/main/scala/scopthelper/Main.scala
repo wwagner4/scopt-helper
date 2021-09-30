@@ -4,57 +4,79 @@ import scopt.OParser
 
 object Main {
 
-  sealed trait Mode
+  def main(args: Array[String]): Unit =
+    Cooking.parse(args)
 
-  case object Update extends Mode
+  object Cooking {
 
-  case class Insert(num: Int) extends Mode
+    def parse(args: Array[String]): Unit = {
+      OParser.parse(parser, args, CookingConfig()) match {
+        case Some(config) =>
+          println(s"Cooking config is: $config")
+        case _ =>
+      }
+    }
 
-  case class CliCfg(
-                     foo: Int = -1,
-                     libName: String = "",
-                     mode: Mode = Update
-                   )
+    case class CookingConfig(
+                              vegan: Boolean = false,
+                              command: Command = Shopping(),
+                            )
 
-  val builder = OParser.builder[CliCfg]
-  val parser = {
-    import builder.*
-    OParser.sequence(
-      programName("cli-test"),
-      head("cli-test"),
-      opt[Int]('f', "foo")
-        .action((x, c) => c.copy(foo = x))
-        .text("foo is an integer property"),
-      opt[String]('l', name = "libName")
-        .action((x, c) => c.copy(libName = x))
-        .text("library name. string"),
-      help('h', "help")
-        .text("prints this usage text"),
-      cmd("update")
-        .action((_, c) => c.copy(mode = Update))
-        .text("     update whatever"),
-      cmd("insert")
-        .action((_, c) => c.copy(mode = Insert(0)))
-        .text("     insert is somthing to be inserted")
-        .children(
-          opt[Int]('n', "number")
-            .action((x, c) => c.mode match {
-              case i: Insert => c.copy(mode = i.copy(num = x))
-              case _ => throw IllegalStateException()
-            })
-            .text("Number of inserts"),
-        )
-    )
-  }
+    trait Command
 
-  def main(args: Array[String]): Unit = {
-    // OParser.parse returns Option[Config]
-    OParser.parse(parser, args, CliCfg()) match {
-      case Some(config) =>
-        println(config)
-      case _ =>
-      // arguments are bad, error message will have been displayed
+    case class Shopping(
+                         number: Int = 0,
+                         description: String = "",
+                       ) extends Command
+
+    case class Prepare(
+                        numberOfPersons: Int = 1,
+                        motto: String = ""
+                      ) extends Command
+
+    val builder = OParser.builder[CookingConfig]
+    val parser = {
+      import builder.*
+      OParser.sequence(
+        programName("cooking"),
+        head("Lets do some shopping and then prepare a delicious meal"),
+        opt[Unit]('v', "vegan")
+          .action((_, c) => c.copy(vegan = true))
+          .text("if present the only vegan ingrediens"),
+        help('h', "help").text("prints this usage text"),
+        cmd("shopping")
+          .text("lets go shopping for our meal")
+          .action((_, c) => c.copy(command = Shopping()))
+          .children(
+            opt[Int]('n', "number-of-persons")
+              .text("Number of persons")
+              .action((x, c) => {
+                c.copy(command = c.command.asInstanceOf[Shopping].copy(number = x))
+              }),
+            opt[String]('d', "description")
+              .text("Describes our ingrediences")
+              .action((x, c) => {
+                c.copy(command = c.command.asInstanceOf[Shopping].copy(description = x))
+              }),
+          ),
+        cmd("prepare")
+          .text("lets prepare our meal")
+          .action((_, c) => c.copy(command = Prepare()))
+          .children(
+            opt[Int]('n', "number-of-persons")
+              .text("Number of persons")
+              .required()
+              .validate(x => if x > 0 then success else failure("Number of persons must be more than zero"))
+              .action((x, c) => {
+                c.copy(command = c.command.asInstanceOf[Prepare].copy(numberOfPersons = x))
+              }),
+            opt[String]('m', "motto")
+              .text("Motto of what we are cooking. E.g. italien, ...")
+              .action((x, c) => {
+                c.copy(command = c.command.asInstanceOf[Prepare].copy(motto = x))
+              }),
+          ),
+      )
     }
   }
-
 }
