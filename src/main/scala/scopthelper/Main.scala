@@ -10,19 +10,19 @@ object Main {
   object Cooking {
 
     def parse(args: Array[String]): Unit = {
-      // OParser.parse returns Option[Config]
-      OParser.parse(parser, args, CookingData()) match {
+      OParser.parse(parser, args, CookingConfig()) match {
         case Some(shoppingData) =>
           println(shoppingData)
         case _ =>
+          // TODO handle error here and not in stderr
           println("Something went wrong ???")
       }
     }
 
-    case class CookingData(
-                            vegan: Boolean = false,
-                            command: Command = Shopping(),
-                          )
+    case class CookingConfig(
+                              vegan: Boolean = false,
+                              command: Command = Shopping(),
+                            )
 
     trait Command
 
@@ -36,7 +36,7 @@ object Main {
                         motto: String = ""
                       ) extends Command
 
-    val builder = OParser.builder[CookingData]
+    val builder = OParser.builder[CookingConfig]
     val parser = {
       import builder.*
       OParser.sequence(
@@ -53,19 +53,14 @@ object Main {
             opt[Int]('n', "number-of-persons")
               .text("Number of persons")
               .action((x, c) => {
-                val s = c.asInstanceOf[Shopping]
-                c.copy(command = s.copy(number = x))
-              })
-            ,
+                c.copy(command = c.command.asInstanceOf[Shopping].copy(number = x))
+              }),
             opt[String]('d', "description")
               .text("Describes our ingrediences")
               .action((x, c) => {
-                val s = c.asInstanceOf[Shopping]
-                c.copy(command = s.copy(description = x))
-              })
-            ,
-          )
-        ,
+                c.copy(command = c.command.asInstanceOf[Shopping].copy(description = x))
+              }),
+          ),
         cmd("prepare")
           .text("lets prepare our meal")
           .action((_, c) => c.copy(command = Prepare()))
@@ -73,18 +68,14 @@ object Main {
             opt[Int]('n', "number-of-persons")
               .text("Number of persons")
               .action((x, c) => {
-                val p = c.asInstanceOf[Prepare]
-                c.copy(command = p.copy(numberOfPersons = x))
-              })
-            ,
+                c.copy(command = c.command.asInstanceOf[Prepare].copy(numberOfPersons = x))
+              }),
             opt[String]('m', "motto")
               .text("Motto of what we are cooking. E.g. italien, ...")
               .action((x, c) => {
-                val p = c.asInstanceOf[Prepare]
-                c.copy(command = p.copy(motto = x))
-              })
-          )
-        ,
+                c.copy(command = c.command.asInstanceOf[Prepare].copy(motto = x))
+              }),
+          ),
       )
     }
   }
