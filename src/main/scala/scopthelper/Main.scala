@@ -57,4 +57,25 @@ object Main {
     }
   }
 
+  object Cooking {
+
+    case class CookungData(
+                            vagan: Boolean = false,
+                            command: Command,
+                          )
+
+    trait Command
+
+    case class Shopping(
+                         number: Int = 0,
+                         description: String = "",
+                       ) extends Command
+
+    case class Prepare(
+                        numberOfPersons: Int = 1,
+                        motto: String = ""
+                      )
+
+  }
+
 }
