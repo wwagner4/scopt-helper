@@ -42,8 +42,8 @@ object Main {
       OParser.sequence(
         programName("cooking"),
         head("Lets do some shopping and then prepare a delicious meal"),
-        opt[Boolean]('v', "vegan")
-          .action((x, c) => c.copy(vegan = x))
+        opt[Unit]('v', "vegan")
+          .action((_, c) => c.copy(vegan = true))
           .text("if present the only vegan ingrediens"),
         help('h', "help").text("prints this usage text"),
         cmd("shopping")
