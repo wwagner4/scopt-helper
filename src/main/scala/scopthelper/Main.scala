@@ -11,11 +11,9 @@ object Main {
 
     def parse(args: Array[String]): Unit = {
       OParser.parse(parser, args, CookingConfig()) match {
-        case Some(shoppingData) =>
-          println(shoppingData)
+        case Some(config) =>
+          println(s"Cooking config is: $config")
         case _ =>
-          // TODO handle error here and not in stderr
-          println("Something went wrong ???")
       }
     }
 
@@ -68,7 +66,7 @@ object Main {
             opt[Int]('n', "number-of-persons")
               .text("Number of persons")
               .required()
-              .validate(x => if x > 1 then success else failure("Number of persons must be more than zero"))
+              .validate(x => if x > 0 then success else failure("Number of persons must be more than zero"))
               .action((x, c) => {
                 c.copy(command = c.command.asInstanceOf[Prepare].copy(numberOfPersons = x))
               }),
