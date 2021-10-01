@@ -5,7 +5,7 @@ import scopt.OParser
 object Main {
 
   def main(args: Array[String]): Unit =
-    Cooking.parse(args)
+    Starts.parse(args)
 
   object Starts {
 
@@ -30,9 +30,28 @@ object Main {
     )
 
     case class StarsConfig(
-                            id: String
+                            id: String = ""
                           )
 
+    val builder = OParser.builder[StarsConfig]
+    val parser = {
+      import builder.*
+      OParser.sequence(
+        programName("Wilson classification"),
+        head("Show the details of the wilson classification"),
+        arg[String]("id")
+          .action((x, c) => c.copy(id = x))
+          .text("Id of one of the wilson classes"),
+        help('h', "help").text("prints this usage text"),
+      )
+    }
+    def parse(args: Array[String]): Unit = {
+      OParser.parse(parser, args, StarsConfig()) match {
+        case Some(config) =>
+          println(s"id:${config.id}")
+        case _ =>
+      }
+    }
 
   }
 
