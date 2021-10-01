@@ -33,13 +33,27 @@ object Main {
                             id: String = ""
                           )
 
-    def table(selectables: Seq[Selectable1]): String = {
+    def table(selectables: Seq[Selectable1], withHeader: Boolean) = {
+      val headerId = "id"
+      val headerDescription = "description"
+
       def maxlen(strings: Iterable[String]): Int = strings.map(_.length).max
 
-      val idl = maxlen(selectables.map(_.id))
-      val descl = maxlen(selectables.map(_.description))
-      val fmt = s"%-${idl}s : %-${descl}s"
-      selectables.map(e => fmt.format(e.id, e.description)) mkString ("\n")
+      def line(len: Int): String = Seq.fill(len)('-').mkString
+
+      val lenId = math.max(maxlen(selectables.map(_.id)), headerId.length)
+      val lenDesc = math.max(maxlen(selectables.map(_.description)), headerDescription.length)
+      if withHeader then {
+        val formatString = s"%-${lenId}s | %-${lenDesc}s"
+        val header = Seq(formatString.format("id", "description"))
+        val sepa = Seq(line(lenId + 1) + "+" + line(lenDesc + 1))
+        val lines = selectables.map(e => formatString.format(e.id, e.description))
+        (header ++ sepa ++ lines).mkString("\n")
+      } else {
+        val formatString = s"%-${lenId}s : %-${lenDesc}s"
+        val lines = selectables.map(e => formatString.format(e.id, e.description))
+        lines.mkString("\n")
+      }
     }
 
 
@@ -50,8 +64,14 @@ object Main {
         programName("Wilson classification"),
         head("Show the details of the wilson classification"),
         arg[String]("id")
+          .required()
           .action((x, c) => c.copy(id = x))
-          .text("Id of one of the wilson classes"),
+          .text(s"Must be one of the wilson classes\n${table(wilsonClasses, withHeader = true)}")
+          .validate { x =>
+            if wilsonClasses.map(_.id).contains(x)
+            then success
+            else failure(s"id must be one of the following\n${table(wilsonClasses, withHeader = false)}")
+          },
         help('h', "help").text("prints this usage text"),
       )
     }

@@ -8,7 +8,7 @@ object Tryout {
 
   val entries = Seq(
     Entry("a", "Some text"),
-    Entry("a1", "Some text"),
+    Entry("a1", "Some text text text"),
     Entry("o", "Some text"),
     Entry("x", "Some text"),
   )
@@ -16,7 +16,10 @@ object Tryout {
 
   @main
   def main(): Unit = {
-    println(table(entries))
+    println(table(entries)(withHeader = true))
+    println()
+    println()
+    println(table(entries)(withHeader = false))
   }
 
 }
