@@ -9,12 +9,28 @@ object Main {
 
   object Starts {
 
+    trait Selectable {
+      def id: String
 
-    /*
-    */
+      def description: String
+    }
+
+    case class WilsonClass(
+                            id: String,
+                            description: String,
+                            fullDescription: String,
+                          ) extends Selectable
+
+    val wilsonClasses = Seq(
+      WilsonClass("sd", "Subdwarf", "Sometimes denoted by 'sd', is a star with luminosity class VI under the Yerkes spectral classification system. They are defined as stars with luminosity 1.5 to 2 magnitudes lower than that of main-sequence stars of the same spectral type. On a Hertzsprung–Russell diagram subdwarfs appear to lie below the main sequence."),
+      WilsonClass("d", "Dwarf", "A dwarf is a star of relatively small size and low luminosity. Most main sequence stars are dwarf stars. The term was originally coined in 1906 when the Danish astronomer Ejnar Hertzsprung noticed that the reddest stars—classified as K and M in the Harvard scheme—could be divided into two distinct groups. They are either much brighter than the Sun, or much fainter"),
+      WilsonClass("sg", "Subgiant", "A subgiant is a star that is brighter than a normal main-sequence star of the same spectral class, but not as bright as giant stars. The term subgiant is applied both to a particular spectral luminosity class and to a stage in the evolution of a star."),
+      WilsonClass("g", "Giant", "A giant star is a star with substantially larger radius and luminosity than a main-sequence (or dwarf) star of the same surface temperature.[1] They lie above the main sequence (luminosity class V in the Yerkes spectral classification) on the Hertzsprung–Russell diagram and correspond to luminosity classes II and III. The terms giant and dwarf were coined for stars of quite different luminosity despite similar temperature or spectral type by Ejnar Hertzsprung about 1905"),
+      WilsonClass("sg", "Supergiant", "Supergiants are among the most massive and most luminous stars. Supergiant stars occupy the top region of the Hertzsprung–Russell diagram with absolute visual magnitudes between about −3 and −8. The temperature range of supergiant stars spans from about 3,400 K to over 20,000 K."),
+    )
 
     case class StarsConfig(
-
+                            id: String
                           )
 
 
