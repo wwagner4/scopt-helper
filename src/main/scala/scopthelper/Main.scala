@@ -9,7 +9,7 @@ object Main {
 
   object Starts {
 
-    trait Selectable {
+    trait Selectable1 {
       def id: String
 
       def description: String
@@ -19,7 +19,7 @@ object Main {
                             id: String,
                             description: String,
                             fullDescription: String,
-                          ) extends Selectable
+                          ) extends Selectable1
 
     val wilsonClasses = Seq(
       WilsonClass("sd", "Subdwarf", "Sometimes denoted by 'sd', is a star with luminosity class VI under the Yerkes spectral classification system. They are defined as stars with luminosity 1.5 to 2 magnitudes lower than that of main-sequence stars of the same spectral type. On a Hertzsprung–Russell diagram subdwarfs appear to lie below the main sequence."),
@@ -33,6 +33,16 @@ object Main {
                             id: String = ""
                           )
 
+    def table(selectables: Seq[Selectable1]): String = {
+      def maxlen(strings: Iterable[String]): Int = strings.map(_.length).max
+
+      val idl = maxlen(selectables.map(_.id))
+      val descl = maxlen(selectables.map(_.description))
+      val fmt = s"%-${idl}s : %-${descl}s"
+      selectables.map(e => fmt.format(e.id, e.description)) mkString ("\n")
+    }
+
+
     val builder = OParser.builder[StarsConfig]
     val parser = {
       import builder.*
@@ -45,6 +55,7 @@ object Main {
         help('h', "help").text("prints this usage text"),
       )
     }
+
     def parse(args: Array[String]): Unit = {
       OParser.parse(parser, args, StarsConfig()) match {
         case Some(config) =>
