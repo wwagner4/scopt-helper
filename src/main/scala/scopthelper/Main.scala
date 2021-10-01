@@ -7,6 +7,19 @@ object Main {
   def main(args: Array[String]): Unit =
     Cooking.parse(args)
 
+  object Starts {
+
+
+    /*
+    */
+
+    case class StarsConfig(
+
+                          )
+
+
+  }
+
   object Cooking {
 
     def parse(args: Array[String]): Unit = {
