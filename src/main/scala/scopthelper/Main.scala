@@ -30,7 +30,7 @@ object Main {
     )
 
     case class StarsConfig(
-                            id: String = ""
+                            wilsonClassId: String = ""
                           )
 
     def table(selectables: Seq[Selectable1], withHeader: Boolean) = {
@@ -48,7 +48,7 @@ object Main {
         val header = Seq(formatString.format("id", "description"))
         val sepa = Seq(line(lenId + 1) + "+" + line(lenDesc + 1))
         val lines = selectables.map(e => formatString.format(e.id, e.description))
-        (header ++ sepa ++ lines).mkString("\n")
+        (sepa ++ header ++ sepa ++ lines).mkString("\n")
       } else {
         val formatString = s"%-${lenId}s : %-${lenDesc}s"
         val lines = selectables.map(e => formatString.format(e.id, e.description))
@@ -65,12 +65,12 @@ object Main {
         head("Show the details of the wilson classification"),
         arg[String]("id")
           .required()
-          .action((x, c) => c.copy(id = x))
+          .action((x, c) => c.copy(wilsonClassId = x))
           .text(s"Must be one of the wilson classes\n${table(wilsonClasses, withHeader = true)}")
           .validate { x =>
             if wilsonClasses.map(_.id).contains(x)
             then success
-            else failure(s"id must be one of the following\n${table(wilsonClasses, withHeader = false)}")
+            else failure(s"id must be one of the following: ${wilsonClasses.map(_.id).mkString(", ")}")
           },
         help('h', "help").text("prints this usage text"),
       )
@@ -86,7 +86,7 @@ object Main {
 
       OParser.parse(parser, args, StarsConfig()) match {
         case Some(config) =>
-          val wc = wilsonClassFromId(config.id)
+          val wc = wilsonClassFromId(config.wilsonClassId)
           println("-----------------------------------------------------------------------------")
           println(wc.id)
           println(wc.description)
