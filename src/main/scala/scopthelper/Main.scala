@@ -9,7 +9,7 @@ object Main {
 
   object Starts {
 
-    trait Selectable1 {
+    trait ConfigWithId {
       def id: String
 
       def description: String
@@ -19,7 +19,7 @@ object Main {
                             id: String,
                             description: String,
                             fullDescription: String,
-                          ) extends Selectable1
+                          ) extends ConfigWithId
 
     val wilsonClasses = Seq(
       WilsonClass("sd", "Subdwarf", "Sometimes denoted by 'sd', is a star with luminosity class VI under the Yerkes spectral classification system. They are defined as stars with luminosity 1.5 to 2 magnitudes lower than that of main-sequence stars of the same spectral type. On a Hertzsprung–Russell diagram subdwarfs appear to lie below the main sequence."),
@@ -33,7 +33,7 @@ object Main {
                             wilsonClassId: String = ""
                           )
 
-    def table(selectables: Seq[Selectable1], withHeader: Boolean) = {
+    def table(selectables: Seq[ConfigWithId], withHeader: Boolean) = {
       val headerId = "id"
       val headerDescription = "description"
 

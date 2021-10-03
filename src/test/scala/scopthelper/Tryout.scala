@@ -1,10 +1,10 @@
 package scopthelper
 
-import scopthelper.Main.Starts.{Selectable1, table}
+import scopthelper.Main.Starts.{ConfigWithId, table}
 
 object Tryout {
 
-  case class Entry(id: String, description: String) extends Selectable1
+  case class Entry(id: String, description: String) extends ConfigWithId
 
   val entries = Seq(
     Entry("a", "Some text"),
@@ -13,13 +13,12 @@ object Tryout {
     Entry("x", "Some text"),
   )
 
-
   @main
   def main(): Unit = {
-    println(table(entries)(withHeader = true))
     println()
+    println(table(entries, withHeader = true))
     println()
-    println(table(entries)(withHeader = false))
+    println(table(entries, withHeader = false))
   }
 
 }
